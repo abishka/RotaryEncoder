@@ -1,6 +1,10 @@
+#define e_pin1 10
+#define e_pin2 11
 
+#define encoder_pin1 digitalRead(e_pin1)
+#define encoder_pin2 digitalRead(e_pin2)
 
-void Rotary_Encoder(signed int *val)
+void Rotary_Encoder(signed int *val,unsigned int step)
 {
     static struct
     {
@@ -9,63 +13,63 @@ void Rotary_Encoder(signed int *val)
         unsigned char two_seen0 : 1;
         unsigned char two_seen1 : 1;
 
-    } volume_pos;
+    } Encoder_pos;
 
-    if (((pn_speed_pos_sw & (1 << pn_speed_pos_sw_bit))) && (!(pn_speed_neg_sw & (1 << pn_speed_neg_sw_bit))))
+    if( !encoder_pin1 && !encoder_pin2 ) 
     {
-        if (volume_pos.INC && volume_pos.two_seen1)
+        if (Encoder_pos.INC && Encoder_pos.two_seen1)
         {
-            *val += 1;
+            *val += step;
         }
-        if (volume_pos.DEC && volume_pos.two_seen1)
+        if (Encoder_pos.DEC && Encoder_pos.two_seen1)
         {
-            *val -= 1;
+            *val -= step;
         }
 
-        volume_pos.two_seen0 = 1;
-        volume_pos.two_seen1 = 0;
-        volume_pos.INC = 0;
-        volume_pos.DEC = 0;
+        Encoder_pos.two_seen0 = 1;
+        Encoder_pos.two_seen1 = 0;
+        Encoder_pos.INC = 0;
+        Encoder_pos.DEC = 0;
     }
 
-    if (!((pn_speed_pos_sw & (1 << pn_speed_pos_sw_bit))) && ((pn_speed_neg_sw & (1 << pn_speed_neg_sw_bit))))
+    if( encoder_pin1 && encoder_pin2 )   
     {
-        if (volume_pos.INC && volume_pos.two_seen0)
+        if (Encoder_pos.INC && Encoder_pos.two_seen0)
         {
-            *val += 1;
+            *val += step;
         }
-        if (volume_pos.DEC && volume_pos.two_seen0)
+        if (Encoder_pos.DEC && Encoder_pos.two_seen0)
         {
 
-            *val -= 1;
+            *val -= step;
         }
-        volume_pos.two_seen0 = 0;
-        volume_pos.two_seen1 = 1;
-        volume_pos.INC = 0;
-        volume_pos.DEC = 0;
+        Encoder_pos.two_seen0 = 0;
+        Encoder_pos.two_seen1 = 1;
+        Encoder_pos.INC = 0;
+        Encoder_pos.DEC = 0;
     }
 
-    if (!((pn_speed_pos_sw & (1 << pn_speed_pos_sw_bit))) && (!(pn_speed_neg_sw & (1 << pn_speed_neg_sw_bit))))
+    if( !encoder_pin1 && encoder_pin2 )   
     {
-        if (volume_pos.two_seen0)
+        if (Encoder_pos.two_seen0)
         {
-            volume_pos.INC = 1;
+            Encoder_pos.INC = 1;
         }
-        if (volume_pos.two_seen1)
+        if (Encoder_pos.two_seen1)
         {
-            volume_pos.DEC = 1;
+            Encoder_pos.DEC = 1;
         }
     }
 
-    if (((pn_speed_pos_sw & (1 << pn_speed_pos_sw_bit))) && ((pn_speed_neg_sw & (1 << pn_speed_neg_sw_bit))))
+    if( encoder_pin1 && !encoder_pin2 )   
     {
-        if (volume_pos.two_seen1)
+        if (Encoder_pos.two_seen1)
         {
-            volume_pos.INC = 1;
+            Encoder_pos.INC = 1;
         }
-        if (volume_pos.two_seen0)
+        if (Encoder_pos.two_seen0)
         {
-            volume_pos.DEC = 1;
+            Encoder_pos.DEC = 1;
         }
     }
 }
